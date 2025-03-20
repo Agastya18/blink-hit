@@ -20,14 +20,18 @@ export async function GET(request: Request) {
   const payload: ActionGetResponse = {
     // Define the GET response payload
     icon: "https://images4.alphacoders.com/194/194934.jpg", // Icon URL
-    title: "Donate to the agent47", // Title
+    title: "wanna donate to the agent47 ?", // Title
     description: "Support hitman by donating SOL.", // Description
     label: "Donate", // Label for the action
     links: {
       actions: [
         {
+          label: "yes", // Action label
+          href: `${url.href}?amount=0.2`, // Action URL with amount parameter
+        },
+        {
           label: "Donate 0.1 SOL", // Action label
-          href: `${url.href}?amount=0.1`, // Action URL with amount parameter
+          href: `${url.href}?amount=0.0001`, // Action URL with amount parameter
         },
       ],
     },
