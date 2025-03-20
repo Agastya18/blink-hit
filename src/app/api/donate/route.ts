@@ -26,11 +26,11 @@ export async function GET(request: Request) {
     links: {
       actions: [
         {
-          label: "yes", // Action label
+          label: "YES", // Action label
           href: `${url.href}?amount=0.2`, // Action URL with amount parameter
         },
         {
-          label: "Donate 0.1 SOL", // Action label
+          label: "NO", // Action label
           href: `${url.href}?amount=0.0001`, // Action URL with amount parameter
         },
       ],
