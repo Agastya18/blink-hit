@@ -21,30 +21,40 @@ import {
 export async function GET(request: Request) {
   const url = new URL(request.url); // Parse the request URL
  console.log("rreqqq",request);
-  console.log(url);
+ // console.log(url);
 
   const slug = url.searchParams.get("events"); // Get the event parameter from the URL
-  console.log(slug)
+ // console.log(slug)
 
+     async function resolveSlug(slug:any) {
+    const resp = await fetch(`https://dev.api.verolabs.xyz/api/v1/slug/${slug}`)
+    const data = await resp.json()
+     const eventid= data.data.id;
+     return eventid
+     }
+
+  const eventid = await resolveSlug(slug)
+  //console.log("eventid",eventid)
   
 
-  async function getEvent(id) {
+  async function getEvent(id:any) {
     const resp = await fetch(`https://dev.api.verolabs.xyz/api/v1/product/public/events/${id}`)
     const data = await resp.json()
     return data
   }
 
-  let event
+  let event = await getEvent(eventid)
+ // console.log("event",event)
 
-  if (slug==="trade-on-this-to-test-new-tokens-9a"){
+  // if (slug==="trade-on-this-to-test-new-tokens-9a"){
 
-    event = await getEvent(16)
+  //   event = await getEvent(16)
 
-  }else if(slug==="trade-test-2-7z"){
-    event = await getEvent(17)
-  }else{
-    event = await getEvent(16)
-  }
+  // }else if(slug==="trade-test-2-7z"){
+  //   event = await getEvent(17)
+  // }else{
+  //   event = await getEvent(16)
+  // }
 
 
 
