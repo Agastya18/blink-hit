@@ -1,12 +1,17 @@
 import { ACTIONS_CORS_HEADERS, ActionsJson } from "@solana/actions";
+// import Cors from 'cors';
 
+// const cors = Cors({
+//   origin: '*', // Allow all origins
+//   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
+// });
 export const GET = async () => {
   const payload: ActionsJson = {
     rules: [
       // map all root level routes to an action
       {
-        pathPattern: "/",
-        apiPath: "/api/donate/",
+        pathPattern: "/events/*",
+         apiPath: "/api/actions/bet?events=*"
       },
     ],
   };

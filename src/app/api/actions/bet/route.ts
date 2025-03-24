@@ -6,6 +6,7 @@ import {
   createPostResponse, // Function to create a POST response
 } from "@solana/actions";
 
+
 import {
   Connection, // Class for Solana network connection
   LAMPORTS_PER_SOL, // Constant for lamports to SOL conversion
@@ -15,23 +16,55 @@ import {
   clusterApiUrl, // Function to get cluster API URL
 } from "@solana/web3.js";
 
+ 
+
 export async function GET(request: Request) {
   const url = new URL(request.url); // Parse the request URL
+ console.log("rreqqq",request);
+  console.log(url);
+
+  const slug = url.searchParams.get("events"); // Get the event parameter from the URL
+  console.log(slug)
+
+  
+
+  async function getEvent(id) {
+    const resp = await fetch(`https://dev.api.verolabs.xyz/api/v1/product/public/events/${id}`)
+    const data = await resp.json()
+    return data
+  }
+
+  let event
+
+  if (slug==="trade-on-this-to-test-new-tokens-9a"){
+
+    event = await getEvent(16)
+
+  }else if(slug==="trade-test-2-7z"){
+    event = await getEvent(17)
+  }else{
+    event = await getEvent(16)
+  }
+
+
+
   const payload: ActionGetResponse = {
     // Define the GET response payload
-    icon: "https://images4.alphacoders.com/194/194934.jpg", // Icon URL
-    title: "wanna donate to the agent47 ?", // Title
-    description: "Support hitman by donating SOL.", // Description
-    label: "Donate", // Label for the action
+    icon:event.data.image_url,
+    description:event.data.expiry_date,
+    title: event.data.display_name,
+    label: event.data.name,
     links: {
       actions: [
         {
-          label: "YES", // Action label
-          href: `${url.href}?amount=0.2`, // Action URL with amount parameter
+          label: event.data.button_text_yes, // Action label
+          // href: `/api/actions/bet?choice=yes`, // Action URL with amount parameter
+          href: url.href+`&choice=yes`,
         },
         {
-          label: "NO", // Action label
-          href: `${url.href}?amount=0.0001`, // Action URL with amount parameter
+          label:event.data.button_text_no, // Action label
+          // href: `/api/actions/bet?choice=no`, // Action URL with amount parameter
+          href: url.href+`&choice=no`,
         },
       ],
     },
@@ -45,33 +78,30 @@ export const OPTIONS = GET; // Allow OPTIONS request to use GET handler
 
 export async function POST(request: Request) {
   const body: ActionPostRequest = await request.json(); // Parse the request body
-  const url = new URL(request.url); // Parse the request URL
-  const amount = Number(url.searchParams.get("amount")) || 0.1; // Get the amount from query params or default to 0.1
-  let sender;
+  console.log(body);
+  
+  const userPub= body.account;
+//  console.log(request);
 
-  try {
-    sender = new PublicKey(body.account); // Parse the sender public key
-  } catch (error) {
-    return Response.json(
-      {
-        error: {
-          message: "Invalid account", // Return error if invalid account
-        },
-      },
-      {
-        status: 400, // Bad request status
-        headers: ACTIONS_CORS_HEADERS, // Set CORS headers
-      }
-    );
-  }
+  const url = new URL(request.url); // Parse the request URL
+  const c= url.searchParams.get("choice"); 
+  // Get the choice parameter from the URL
+ // console.log(c);
+
+  const  e= url.searchParams.get("events");
+ // console.log("val of e",e);
+
+
+
+  const  sender = new PublicKey(body.account);
 
   const connection = new Connection(clusterApiUrl("devnet"), "confirmed"); // Create a connection to the mainnet-beta cluster
 
   const transaction = new Transaction().add(
     SystemProgram.transfer({
-      fromPubkey: sender, // Sender public key
+      fromPubkey:sender, // Sender public key
       toPubkey: new PublicKey("8QmrmTiGQt5ed7cd7QBzfSWpe3FjpZw3wkUrR6riG8pU"), // Recipient public key
-      lamports: amount * LAMPORTS_PER_SOL, // Amount to transfer in lamports
+      lamports: 0.1 * LAMPORTS_PER_SOL, // Amount to transfer in lamports
     })
   );
   transaction.feePayer = sender; // Set the fee payer
@@ -85,7 +115,7 @@ export async function POST(request: Request) {
   const payload: ActionPostResponse = await createPostResponse({
     fields: {
       transaction, // Add the transaction to the response payload
-      message: "Transaction created", // Success message
+      message: `You choose ${c} for ${e} . transaction confirmed.`,
     },
   });
   return new Response(JSON.stringify(payload), {
